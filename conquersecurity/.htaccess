@@ -1,0 +1,40 @@
+Options -Indexes
+RewriteEngine On
+RewriteBase /conquersecurity/
+DirectoryIndex index.php
+
+ErrorDocument 404 /conquersecurity/404.php
+
+# Do not redirect Cloudinary POST processor
+RewriteRule ^process-cloudinary-upload\.php$ - [L]
+
+# Homepage: /index.php or /index always redirect to the site root
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteRule ^index\.php$ /conquersecurity/ [R=302,L]
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteRule ^index/?$ /conquersecurity/ [R=302,L]
+
+# Folder-vs-page collision fix: prefer the .php page over a same-named folder
+RewriteCond %{REQUEST_URI} ^(.*)/$
+RewriteCond %{DOCUMENT_ROOT}%1.php -f
+RewriteRule ^ %1 [R=302,L]
+
+# Redirect normal .php URLs to extensionless URLs
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteCond %{THE_REQUEST} \s/+conquersecurity/(.+)\.php(?:[\s?]) [NC]
+RewriteRule ^(.+)\.php$ $1 [R=302,L,NE]
+
+# Internally load PHP file for extensionless URLs
+# (a matching .php file always wins over a same-named folder)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+?)/?$ $1.php [L]
+
+# Dynamic blog posts
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.php !-f
+RewriteRule ^blog/([a-zA-Z0-9\-]+)/?$ blog/post.php?slug=$1 [L,QSA,NC]
+
+# Remove trailing slash (for everything else)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ $1 [R=302,L]

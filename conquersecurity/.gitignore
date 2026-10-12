@@ -1,0 +1,14 @@
+.env
+/vendor/
+/uploads/temp/*
+
+# Real credentials — never commit this. Copy config.example.php to config.php
+# and fill in real values locally / on the server instead.
+includes/config.php
+
+# Uploaded content — generated at runtime, not part of the source
+assets/uploads/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
